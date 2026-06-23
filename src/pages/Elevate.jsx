@@ -2,26 +2,31 @@ import { useRef, useState, useEffect } from "react";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { usePageTransition } from "../components/PageTransition";
-import elevateVideo from "../assets/videos/Elevate_Main.mp4";
-import player_profile from "../assets/elevateImages/player_profile.png";
-import coach_profile from "../assets/elevateImages/coach_profile.png";
-import player_review from "../assets/elevateImages/player_review.png";
-import find_coach from "../assets/elevateImages/find_coach.png";
-import elevate_home from "../assets/elevateImages/elevate_home.png";
-import player_review_open from "../assets/elevateImages/player_review_open.png";
-import realtime_chat from "../assets/elevateImages/realtime_chat.png";
-import coach_review from "../assets/elevateImages/coach_review.png";
-import browse_coach from "../assets/videos/browse_coach.mp4";
-import coach_review_dashboard from "../assets/videos/coach_review_dashboard.mp4";
-import feedback from "../assets/videos/feedback.mp4";
-import realtime_messaging from "../assets/videos/realtime_messaging.mp4";
-import submitting_vod from "../assets/videos/submitting_vod.mp4";
-import room from "../assets/zentraImages/room.png";
+
+// ─────────────────────────────────────────────────────────────────────────
+// ASSETS — swap these with your real Meal Manager files.
+// Keep the folder/name pattern below, or update the paths to match yours.
+// ─────────────────────────────────────────────────────────────────────────
+import mealManagerVideo from "../assets/videos/MealManager_Main.mp4";
+import mealManagerHome from "../assets/mealManagerImages/meal_manager_home.jpg";
+import ownerDashboard from "../assets/mealManagerImages/owner_dashboard.jpg";
+import customerDashboard from "../assets/mealManagerImages/customer_dashboard.jpg";
+import menuManagement from "../assets/mealManagerImages/menu_management.jpg";
+import orderDuesTracking from "../assets/mealManagerImages/order_dues_tracking.jpg";
+import browseMeals from "../assets/mealManagerImages/order_dues_tracking.jpg";
+import duesHistory from "../assets/mealManagerImages/order_dues_tracking.jpg";
+// Cover image for whichever case study comes after this one in your portfolio
+import nextProjectCover from "../assets/mealManagerImages/order_dues_tracking.jpg";
 
 const CREAM = "#EAE4D5";
 const ORANGE = "#E8400C";
 const E = [0.16, 1, 0.3, 1];
 
+// ─────────────────────────────────────────────────────────────────────────
+// Shared helpers — same pattern as the Elevate case study page.
+// If you end up building a third case study, it's worth pulling these
+// into a shared "caseStudy" components file instead of duplicating again.
+// ─────────────────────────────────────────────────────────────────────────
 function useFade(margin = "-60px") {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin });
@@ -127,7 +132,9 @@ function Rule() {
   );
 }
 
-function HeroVideo() {
+// Scroll-driven hero video — takes the source as a prop since this page
+// only has the one video, instead of importing it directly.
+function HeroVideo({ src }) {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -156,7 +163,7 @@ function HeroVideo() {
             willChange: "transform",
           }}>
           <video
-            src={elevateVideo}
+            src={src}
             autoPlay
             loop
             muted
@@ -217,49 +224,23 @@ function HeroVideo() {
   );
 }
 
-function MobileHeroCover() {
+// Mobile fallback for the hero video — a static cover image instead,
+// same as the Elevate page does for small screens.
+function MobileHeroCover({ src, alt }) {
   return (
     <Fade>
       <div
         className="mx-6 mt-2 mb-4 rounded-xl overflow-hidden"
         style={{ border: "1px solid rgba(255,255,255,0.06)" }}>
-        <img src={elevate_home} alt="Elevate Home" className="w-full block" />
+        <img src={src} alt={alt} className="w-full block" />
       </div>
     </Fade>
   );
 }
 
-function FeatureRowWithVideoHover({
-  label,
-  heading,
-  body,
-  img,
-  alt,
-  imgFirst = false,
-  caption,
-  hoverVideo,
-}) {
-  const [hovered, setHovered] = useState(false);
-  const videoRef = useRef(null);
-  const isMobile = useIsMobile();
-
-  const handleMouseEnter = () => {
-    if (isMobile) return;
-    setHovered(true);
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(() => {});
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (isMobile) return;
-    setHovered(false);
-    if (videoRef.current) {
-      videoRef.current.pause();
-    }
-  };
-
+// Simple feature row — image only, no hover-video swap, since this
+// project only has one video and it's already used in the hero.
+function FeatureRow({ label, heading, body, img, alt, imgFirst = false, caption }) {
   return (
     <section className="px-6 sm:px-10 lg:px-20 mb-16 sm:mb-24">
       <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
@@ -272,49 +253,7 @@ function FeatureRowWithVideoHover({
         <Fade
           delay={0.1}
           className={`flex flex-col gap-2 ${imgFirst ? "lg:order-1" : ""}`}>
-          {/* Hover container */}
-          <div
-            className="relative w-full rounded-sm overflow-hidden"
-            style={{
-              border: "1px solid rgba(255,255,255,0.06)",
-              background: "#0e0e0e",
-            }}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}>
-            {/* Static image */}
-            <img
-              src={img}
-              alt={alt}
-              className="w-full h-full object-cover block"
-              style={{
-                display: "block",
-                transition: "opacity 0.5s cubic-bezier(0.16,1,0.3,1)",
-                opacity: hovered && !isMobile ? 0 : 1,
-              }}
-            />
-
-            {/* Video overlay — desktop only */}
-            {!isMobile && hoverVideo && (
-              <video
-                ref={videoRef}
-                src={hoverVideo}
-                loop
-                muted
-                playsInline
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  transition: "opacity 0.5s cubic-bezier(0.16,1,0.3,1)",
-                  opacity: hovered ? 1 : 0,
-                  pointerEvents: "none",
-                }}
-              />
-            )}
-          </div>
-
+          <ScreenImg src={img} alt={alt} />
           {caption && (
             <p
               className="text-[9px] tracking-[0.2em] uppercase opacity-20"
@@ -328,7 +267,7 @@ function FeatureRowWithVideoHover({
   );
 }
 
-export default function Elevate() {
+export default function MealManager() {
   const navigate = useNavigate();
   const { navigateWithTransition } = usePageTransition();
   const isMobile = useIsMobile();
@@ -359,33 +298,12 @@ export default function Elevate() {
         <span
           className="text-[10px] tracking-[0.3em] uppercase"
           style={{ color: `${ORANGE}70`, fontWeight: 300 }}>
-          Elevate / Case Study
+          Meal Manager / Case Study
         </span>
       </nav>
 
       {/* HERO */}
       <section className="relative px-6 sm:px-10 lg:px-20 pt-28 sm:pt-36 lg:pt-40 pb-12 sm:pb-16">
-        {/* Banner — static, no motion wrapper */}
-        <div
-          className="hidden sm:block absolute inset-x-0 top-0 h-105 lg:h-150 pointer-events-none"
-          style={{ zIndex: 0 }}>
-          <img
-            src="https://i.pinimg.com/1200x/ec/31/12/ec31124f9d13dbd3d31efd38f5256cf8.jpg"
-            alt=""
-            aria-hidden="true"
-            className="w-full h-full object-cover object-top"
-            style={{ display: "block" }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(to bottom, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.1) 40%, rgba(10,10,10,0.85) 80%, #0a0a0a 100%)",
-            }}
-          />
-        </div>
-
-        {/* Hero text — always on top */}
         <div className="relative" style={{ zIndex: 1 }}>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
@@ -393,7 +311,7 @@ export default function Elevate() {
             transition={{ duration: 0.6, ease: E, delay: 0.1 }}
             className="text-[10px] tracking-[0.4em] uppercase mb-6 sm:mb-8"
             style={{ color: `${ORANGE}70`, fontWeight: 300 }}>
-            Product · 2025
+            SaaS · Mess Management
           </motion.p>
 
           <div className="overflow-hidden mb-4 sm:mb-6">
@@ -410,7 +328,7 @@ export default function Elevate() {
                 textTransform: "uppercase",
                 color: CREAM,
               }}>
-              Elevate
+              Meal Manager
             </motion.h1>
           </div>
 
@@ -420,9 +338,10 @@ export default function Elevate() {
             transition={{ duration: 0.75, ease: E, delay: 0.3 }}
             className="text-base sm:text-xl font-light leading-relaxed max-w-[48ch] mb-10 sm:mb-14"
             style={{ color: "rgba(234,228,213,0.5)" }}>
-            A competitive coaching platform built for Valorant players who are
-            serious about ranking up. Structured paths, VOD reviews, and live
-            sessions — without the noise of Discord servers.
+            Digitizing tiffin and mess operations for everyday businesses.
+            Owners manage menus, orders, dues, and reports in one place —
+            customers track their meals and balances without a single phone
+            call.
           </motion.p>
 
           <motion.div
@@ -430,10 +349,9 @@ export default function Elevate() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: E, delay: 0.4 }}
             className="flex items-center gap-3">
-            {/* Primary — Live URL */}
-
+            {/* Primary — Live URL. Replace with your deployed link. */}
             <a
-              href="https://elevate-xqw2.onrender.com/"
+              href="https://meal-manager-steel.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-5 py-2.5 text-xs tracking-[0.15em] uppercase transition-all duration-300"
@@ -460,10 +378,9 @@ export default function Elevate() {
               Live Site
             </a>
 
-            {/* Secondary — GitHub */}
-
+            {/* Secondary — GitHub. Replace with your repo link. */}
             <a
-              href="https://github.com/ArnavUpadhyay7/elevate"
+              href="https://github.com/YamrajOfCodes/Meal-Manager"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-5 py-2.5 text-xs tracking-[0.15em] uppercase transition-all duration-300"
@@ -499,22 +416,25 @@ export default function Elevate() {
       <Rule />
 
       {/* VIDEO — desktop scroll-driven / mobile static image */}
-      {isMobile ? <MobileHeroCover /> : <HeroVideo />}
+      {isMobile ? (
+        <MobileHeroCover src={mealManagerHome} alt="Meal Manager home screen" />
+      ) : (
+        <HeroVideo src={mealManagerVideo} />
+      )}
 
       <Rule />
 
-      {/* Hero screenshots */}
+      {/* Hero screenshots — owner vs customer side */}
       <section className="px-6 sm:px-10 lg:px-20 mb-4 mt-4">
         <Fade>
           <div className="mb-8 sm:mb-10">
             <Label>The Product</Label>
-            <SectionHeading>
-              Built for both sides of the session.
-            </SectionHeading>
+            <SectionHeading>Built for both sides of the table.</SectionHeading>
             <Body>
-              Players get a personalised dashboard to find coaches, submit VODs,
-              and track feedback. Coaches get a dedicated profile and review
-              workspace — everything needed to run sessions professionally.
+              Owners get a single dashboard to run menus, orders, dues, and
+              reports — no more paper registers. Customers get their own
+              dashboard to check the menu, place or skip orders, and track
+              exactly what they owe.
             </Body>
           </div>
         </Fade>
@@ -522,21 +442,21 @@ export default function Elevate() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <Fade delay={0.05}>
             <div className="flex flex-col gap-2">
-              <ScreenImg src={player_profile} alt="Player profile" />
+              <ScreenImg src={ownerDashboard} alt="Owner dashboard" />
               <p
                 className="text-[9px] tracking-[0.2em] uppercase opacity-20"
                 style={{ fontFamily: "'Geist', sans-serif" }}>
-                Player dashboard
+                Owner dashboard
               </p>
             </div>
           </Fade>
           <Fade delay={0.1}>
             <div className="flex flex-col gap-2">
-              <ScreenImg src={coach_profile} alt="Coach profile" />
+              <ScreenImg src={customerDashboard} alt="Customer dashboard" />
               <p
                 className="text-[9px] tracking-[0.2em] uppercase opacity-20"
                 style={{ fontFamily: "'Geist', sans-serif" }}>
-                Coach profile
+                Customer dashboard
               </p>
             </div>
           </Fade>
@@ -545,69 +465,52 @@ export default function Elevate() {
 
       <Rule />
 
-      {/* ── FEATURE 1: Browse coaches ── */}
-      <FeatureRowWithVideoHover
-        label="Player Experience · 01"
-        heading="Browse verified coaches by rank and role."
-        body="Players filter the coach roster by their specific rank tier and agent role — no guessing who's qualified. Every coach profile shows rank proof, specialisation, pricing, and showcase clips so players can make an informed decision before spending a rupee."
-        img={find_coach}
-        alt="Find a coach"
-        caption="Coach discovery"
-        hoverVideo={browse_coach}
+      {/* ── FEATURE 1: Menu management ── */}
+      <FeatureRow
+        label="Owner Experience · 01"
+        heading="Menu management without the back-and-forth."
+        body="Owners update the day's menu, mark items unavailable, and adjust prices in seconds. What used to be a phone call or a note on a whiteboard is now a two-minute update that every customer sees instantly."
+        img={menuManagement}
+        alt="Menu management screen"
+        caption="Daily menu management"
       />
 
       <Rule />
 
-      {/* ── FEATURE 2: Submit VOD ── */}
-      <FeatureRowWithVideoHover
-        label="Player Experience · 02"
-        heading="Submit your VOD. Get structured feedback."
-        body="Players attach a gameplay recording to a booked session and pay via Razorpay in the same flow. No back-and-forth over DM — the submission is logged, the coach is notified, and the review arrives with skill ratings and timestamped notes."
-        img={player_review}
-        alt="Player review submission"
+      {/* ── FEATURE 2: Orders & dues tracking ── */}
+      <FeatureRow
+        label="Owner Experience · 02"
+        heading="Every order and every rupee owed, in one table."
+        body="Daily orders roll up automatically against each customer's running balance. Owners see exactly who's ordered, who's skipped, and who owes what — and can generate a report or mark a payment without digging through a paper register at month-end."
+        img={orderDuesTracking}
+        alt="Order and dues tracking screen"
         imgFirst
-        caption="VOD submission flow"
-        hoverVideo={submitting_vod}
+        caption="Orders & dues tracking"
       />
 
       <Rule />
 
-      {/* ── FEATURE 3: Receive feedback ── */}
-      <FeatureRowWithVideoHover
-        label="Player Experience · 03"
-        heading="Feedback you can actually act on."
-        body="Coach notes are structured around specific skill dimensions — positioning, economy, ability usage, game sense. Each rating is tied to what happened in the VOD, not a vague impression. Players know exactly what to drill in their next ranked session."
-        img={player_review_open}
-        alt="Player review open"
-        caption="Structured feedback view"
-        hoverVideo={feedback}
+      {/* ── FEATURE 3: Browse & order meals ── */}
+      <FeatureRow
+        label="Customer Experience · 01"
+        heading="Order today's meal, or skip it — your call."
+        body="Customers check the day's menu and place an order, or mark a day off when they're travelling or just not eating in. No phone calls, no waiting for someone to write it down by hand."
+        img={browseMeals}
+        alt="Browse meals and place order screen"
+        caption="Browse & order flow"
       />
 
       <Rule />
 
-      {/* ── FEATURE 4: Coach dashboard ── */}
-      <FeatureRowWithVideoHover
-        label="Coach Experience · 01"
-        heading="A dashboard built around the coach workflow."
-        body="Incoming review requests surface in one place — no inbox chaos, no missed sessions. Coaches see the player's rank, their submitted VOD, and the session details before accepting. The review interface keeps notes and video in sync."
-        img={coach_review}
-        alt="AI Valorant coach tools"
+      {/* ── FEATURE 4: Dues & payment history ── */}
+      <FeatureRow
+        label="Customer Experience · 02"
+        heading="A running tab you can actually see."
+        body="Every customer gets a personal dashboard showing pending dues, payment history, and past orders — replacing the mental math everyone used to do trying to remember what they paid last."
+        img={duesHistory}
+        alt="Dues and payment history screen"
         imgFirst
-        caption="Coach review dashboard"
-        hoverVideo={coach_review_dashboard}
-      />
-
-      <Rule />
-
-      {/* ── FEATURE 5: Real-time messaging ── */}
-      <FeatureRowWithVideoHover
-        label="Shared · Both sides"
-        heading="Real-time messaging between players and coaches."
-        body="Every booked session opens a persistent chat thread between the player and their coach. Players can ask follow-up questions on their feedback. Coaches can clarify recommendations before the next ranked session. The conversation lives alongside the review — not buried in Discord."
-        img={realtime_chat}
-        alt="Real-time chat between player and coach"
-        caption="In-session messaging"
-        hoverVideo={realtime_messaging}
+        caption="Dues & payment history"
       />
 
       <Rule />
@@ -622,23 +525,23 @@ export default function Elevate() {
           {[
             {
               n: "01",
-              h: "Niche is a feature.",
-              b: "Building for Valorant specifically — not 'esports generally' — made every design decision sharper. The narrower the user, the clearer the product.",
+              h: "Build for the person, not the persona.",
+              b: "This started from watching an actual mess owner manage orders on paper. Every screen had to make sense to someone who'd never used a dashboard before — not an imagined 'SaaS power user'.",
             },
             {
               n: "02",
-              h: "AI should reduce friction, not add it.",
-              b: "Early versions had too much visible AI surface area. Shipping meant making it invisible: it runs in the background, the user sees the result.",
+              h: "The ledger is the real product.",
+              b: "The menu and ordering flow get used daily, but the dues tracker is what actually convinced the owner to switch from paper. Accurate money tracking mattered more than UI polish.",
             },
             {
               n: "03",
-              h: "Async > sync for early products.",
-              b: "VOD review being async was initially a constraint. It became the biggest advantage — no scheduling friction, higher coach-to-player ratio, better economics.",
+              h: "Skipping is harder to design than ordering.",
+              b: "Letting customers mark a day off turned out to be one of the most-used features — tracking absence cleanly was a harder problem than tracking a normal order.",
             },
             {
               n: "04",
-              h: "Progress needs to be felt, not just shown.",
-              b: "Users stop using tools when improvement feels invisible. The hardest design problem was making rank progress visceral, not just a number going up.",
+              h: "Real usage finds real bugs.",
+              b: "Shipping to one working mess surfaced edge cases — late skips, partial payments, midnight orders — that no amount of local testing on my own would have caught.",
             },
           ].map(({ n, h, b }) => (
             <Fade key={n}>
@@ -668,7 +571,10 @@ export default function Elevate() {
 
       <Rule />
 
-      {/* ── NEXT PROJECT ────────────────────────────────────────────────────── */}
+      {/* ── NEXT PROJECT ────────────────────────────────────────────────────
+         Update the route, title, and cover image below to point at whichever
+         case study should follow Meal Manager in your portfolio.
+      ───────────────────────────────────────────────────────────────────── */}
       <section className="px-6 sm:px-10 lg:px-20 pb-24 sm:pb-32">
         <Fade>
           <p
@@ -679,7 +585,7 @@ export default function Elevate() {
         </Fade>
         <Fade delay={0.08}>
           <button
-            onClick={() => navigateWithTransition("/zentra")}
+            onClick={() => navigateWithTransition("/next-project-route")}
             className="group w-full text-left">
             <div
               className="relative overflow-hidden rounded-sm transition-all duration-700"
@@ -687,16 +593,14 @@ export default function Elevate() {
                 background: "#0d0d0d",
                 border: "1px solid rgba(255,255,255,0.06)",
               }}>
-              {/* Full-bleed cover image with hover zoom */}
               <div
                 className="relative overflow-hidden"
                 style={{ aspectRatio: "21/9" }}>
                 <img
-                  src={room}
-                  alt="Zentra cover image"
+                  src={nextProjectCover}
+                  alt="Next project cover image"
                   className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 />
-                {/* Subtle vignette so edges feel contained */}
                 <div
                   className="absolute inset-0"
                   style={{
@@ -704,7 +608,6 @@ export default function Elevate() {
                       "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, transparent 40%, rgba(13,13,13,0.6) 80%, #0d0d0d 100%)",
                   }}
                 />
-                {/* Left fade */}
                 <div
                   className="absolute inset-0"
                   style={{
@@ -714,13 +617,13 @@ export default function Elevate() {
                 />
               </div>
 
-              {/* Text row below image */}
               <div className="px-6 sm:px-10 pb-6 sm:pb-10 pt-4 flex items-end justify-between">
                 <div>
                   <p
                     className="text-[9px] tracking-[0.3em] uppercase mb-2 sm:mb-3"
                     style={{ color: "rgba(255,255,255,0.2)" }}>
-                    2D Spatial World
+                    {/* Replace with the next project's category */}
+                    Next Case Study
                   </p>
                   <h3
                     style={{
@@ -731,7 +634,8 @@ export default function Elevate() {
                       textTransform: "uppercase",
                       color: CREAM,
                     }}>
-                    Zentra
+                    {/* Replace with the next project's name */}
+                    Next Project
                   </h3>
                 </div>
                 <span

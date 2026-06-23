@@ -62,6 +62,141 @@ function ScrambleWord({ text, color, style, delay = 0, visible }) {
   );
 }
 
+/* ── Blinking terminal cursor ── */
+function BlinkCursor() {
+  return (
+    <motion.span
+      animate={{ opacity: [1, 1, 0, 0] }}
+      transition={{ duration: 0.9, repeat: Infinity, times: [0, 0.5, 0.5, 1] }}
+      style={{
+        display: "inline-block",
+        width: 7,
+        height: "1em",
+        background: RED,
+        marginLeft: 3,
+        verticalAlign: "-0.12em",
+      }}
+    />
+  );
+}
+
+/* ── Typewriter hook ── */
+function useTypewriter(text, start, speed = 28) {
+  const [out, setOut] = useState("");
+  useEffect(() => {
+    if (!start) return;
+    let i = 0;
+    setOut("");
+    const id = setInterval(() => {
+      i += 1;
+      setOut(text.slice(0, i));
+      if (i >= text.length) clearInterval(id);
+    }, speed);
+    return () => clearInterval(id);
+  }, [start]); // eslint-disable-line
+  return out;
+}
+
+/* ── Identity self-correction: "Full Stack Engineer" → struck → "Problem Solver" ── */
+function RoleDiff({ visible }) {
+  const [phase, setPhase] = useState("idle");
+  // idle -> typing-old -> holding -> striking -> swapping -> typing-new -> done
+
+  useEffect(() => {
+    if (!visible) return;
+    const seq = [
+      ["typing-old", 1100],
+      ["holding", 1750],
+      ["striking", 2450],
+      ["swapping", 3000],
+      ["typing-new", 3400],
+      ["done", 4150],
+    ];
+    const timers = seq.map(([p, t]) => setTimeout(() => setPhase(p), t));
+    return () => timers.forEach(clearTimeout);
+  }, [visible]);
+
+  const oldText = "Full Stack Engineer";
+  const newText = "Problem Solver";
+
+  const typedOld = useTypewriter(
+    oldText,
+    phase === "typing-old" || phase === "holding" || phase === "striking",
+    26
+  );
+  const typedNew = useTypewriter(
+    newText,
+    phase === "typing-new" || phase === "done",
+    32
+  );
+
+  const showOldRow = ["typing-old", "holding", "striking", "swapping"].includes(phase);
+  const struck = ["striking", "swapping", "typing-new", "done"].includes(phase);
+  const showNewRow = ["typing-new", "done"].includes(phase);
+
+  const monoStyle = {
+    fontFamily: "'JetBrains Mono', monospace",
+    fontSize: "clamp(13px, 1.35vw, 17px)",
+    letterSpacing: "0.01em",
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, minHeight: 30 }}>
+      <AnimatePresence>
+        {showOldRow && (
+          <motion.div
+            key="old"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6, filter: "blur(3px)" }}
+            transition={{ duration: 0.4, ease: E }}
+            style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ ...monoStyle, color: "rgba(232,64,12,0.55)" }}>-</span>
+            <span style={{ position: "relative", display: "inline-block" }}>
+              <span style={{ ...monoStyle, color: "rgba(234,228,213,0.55)" }}>
+                {typedOld}
+                {phase === "typing-old" && <BlinkCursor />}
+              </span>
+              <motion.span
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: struck ? 1 : 0 }}
+                transition={{ duration: 0.45, ease: [0.7, 0, 0.3, 1] }}
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  top: "52%",
+                  height: 1.5,
+                  background: RED,
+                  transformOrigin: "left",
+                  boxShadow: "0 0 6px rgba(232,64,12,0.55)",
+                }}
+              />
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showNewRow && (
+          <motion.div
+            key="new"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: E }}
+            style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ ...monoStyle, color: RED, fontWeight: 600 }}>+</span>
+            <span style={{ ...monoStyle, color: CREAM, fontWeight: 500 }}>
+              {typedNew}
+              {phase === "typing-new" && <BlinkCursor />}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function BackgroundGrid({ visible }) {
   return (
     <motion.div
@@ -125,7 +260,6 @@ function BackgroundGrid({ visible }) {
           </mask>
         </defs>
 
-        {/* Dot fields — unchanged */}
         <rect
           width="100%"
           height="100%"
@@ -139,7 +273,6 @@ function BackgroundGrid({ visible }) {
           mask="url(#grid-mask)"
         />
 
-        {/* Horizontal structural rules */}
         {[22, 44, 67].map((pct) => (
           <line
             key={pct}
@@ -152,7 +285,6 @@ function BackgroundGrid({ visible }) {
           />
         ))}
 
-        {/* Vertical structural rules — flanking content zone */}
         {[12, 88].map((pct) => (
           <line
             key={pct}
@@ -165,76 +297,15 @@ function BackgroundGrid({ visible }) {
           />
         ))}
 
-        {/* Top-left corner */}
-        <line
-          x1="2.2%"
-          y1="3.8%"
-          x2="4.0%"
-          y2="3.8%"
-          stroke="rgba(232,64,12,0.18)"
-          strokeWidth="0.75"
-        />
-        <line
-          x1="2.2%"
-          y1="3.8%"
-          x2="2.2%"
-          y2="7.6%"
-          stroke="rgba(232,64,12,0.18)"
-          strokeWidth="0.75"
-        />
-        {/* Top-right corner */}
-        <line
-          x1="96.0%"
-          y1="3.8%"
-          x2="97.8%"
-          y2="3.8%"
-          stroke="rgba(232,64,12,0.18)"
-          strokeWidth="0.75"
-        />
-        <line
-          x1="97.8%"
-          y1="3.8%"
-          x2="97.8%"
-          y2="7.6%"
-          stroke="rgba(232,64,12,0.18)"
-          strokeWidth="0.75"
-        />
-        {/* Bottom-left corner */}
-        <line
-          x1="2.2%"
-          y1="96.2%"
-          x2="4.0%"
-          y2="96.2%"
-          stroke="rgba(232,64,12,0.18)"
-          strokeWidth="0.75"
-        />
-        <line
-          x1="2.2%"
-          y1="92.4%"
-          x2="2.2%"
-          y2="96.2%"
-          stroke="rgba(232,64,12,0.18)"
-          strokeWidth="0.75"
-        />
-        {/* Bottom-right corner */}
-        <line
-          x1="96.0%"
-          y1="96.2%"
-          x2="97.8%"
-          y2="96.2%"
-          stroke="rgba(232,64,12,0.18)"
-          strokeWidth="0.75"
-        />
-        <line
-          x1="97.8%"
-          y1="92.4%"
-          x2="97.8%"
-          y2="96.2%"
-          stroke="rgba(232,64,12,0.18)"
-          strokeWidth="0.75"
-        />
+        <line x1="2.2%" y1="3.8%" x2="4.0%" y2="3.8%" stroke="rgba(232,64,12,0.18)" strokeWidth="0.75" />
+        <line x1="2.2%" y1="3.8%" x2="2.2%" y2="7.6%" stroke="rgba(232,64,12,0.18)" strokeWidth="0.75" />
+        <line x1="96.0%" y1="3.8%" x2="97.8%" y2="3.8%" stroke="rgba(232,64,12,0.18)" strokeWidth="0.75" />
+        <line x1="97.8%" y1="3.8%" x2="97.8%" y2="7.6%" stroke="rgba(232,64,12,0.18)" strokeWidth="0.75" />
+        <line x1="2.2%" y1="96.2%" x2="4.0%" y2="96.2%" stroke="rgba(232,64,12,0.18)" strokeWidth="0.75" />
+        <line x1="2.2%" y1="92.4%" x2="2.2%" y2="96.2%" stroke="rgba(232,64,12,0.18)" strokeWidth="0.75" />
+        <line x1="96.0%" y1="96.2%" x2="97.8%" y2="96.2%" stroke="rgba(232,64,12,0.18)" strokeWidth="0.75" />
+        <line x1="97.8%" y1="92.4%" x2="97.8%" y2="96.2%" stroke="rgba(232,64,12,0.18)" strokeWidth="0.75" />
 
-        {/* Diagonal accent — bottom right */}
         <line
           x1="78%"
           y1="85%"
@@ -246,7 +317,6 @@ function BackgroundGrid({ visible }) {
         />
       </svg>
 
-      {/* Right-side coordinate HUD — unchanged */}
       <div
         style={{
           position: "absolute",
@@ -429,14 +499,13 @@ export default function HeroSection({ visible }) {
       style={{ background: BG }}>
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;700;900&family=Barlow:wght@300;400&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;700;900&family=Barlow:wght@300;400&family=JetBrains+Mono:wght@400;500;600&display=swap"
       />
 
       <BackgroundGrid visible={visible} />
       <ScanLine visible={visible} />
       <SideLabel visible={visible} />
 
-      {/* Ghost year */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={visible ? { opacity: 1 } : {}}
@@ -457,7 +526,6 @@ export default function HeroSection({ visible }) {
         2026
       </motion.div>
 
-      {/* Top HUD */}
       <div className="relative flex justify-between items-center z-10">
         <motion.div
           initial={{ opacity: 0, x: -16 }}
@@ -481,7 +549,7 @@ export default function HeroSection({ visible }) {
               color: "rgba(232,64,12,0.85)",
               textTransform: "uppercase",
             }}>
-            Arnav.DEV
+            Kundan.DEV
           </span>
         </motion.div>
 
@@ -525,7 +593,6 @@ export default function HeroSection({ visible }) {
         </motion.div>
       </div>
 
-      {/* Main name block */}
       <motion.div
         className="flex flex-col items-start mt-auto relative z-10"
         style={{ opacity, y, scale }}>
@@ -543,24 +610,28 @@ export default function HeroSection({ visible }) {
         />
 
         <ScrambleWord
-          text="ARNAV"
+          text="KUNDAN"
           color={CREAM}
           style={nameStyle}
           delay={120}
           visible={visible}
         />
         <ScrambleWord
-          text="UPADHYAY"
+          text="PATIL"
           color={RED}
           style={nameStyle}
           delay={280}
           visible={visible}
         />
 
+        <div className="mt-5">
+          <RoleDiff visible={visible} />
+        </div>
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={visible ? { opacity: 1 } : {}}
-          transition={{ duration: 0.7, ease: E, delay: 1.0 }}
+          transition={{ duration: 0.7, ease: E, delay: 4.3 }}
           className="mt-4">
           <span
             style={{
@@ -577,7 +648,6 @@ export default function HeroSection({ visible }) {
         </motion.div>
       </motion.div>
 
-      {/* Bottom HUD */}
       <motion.div
         className="relative flex justify-between items-end z-10 mt-16"
         initial={{ opacity: 0 }}

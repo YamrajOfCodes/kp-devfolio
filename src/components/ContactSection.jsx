@@ -17,27 +17,27 @@ const OR = "#E8470A";
 const OR_RGB = "232,71,10";
 const BG = "#0a0a0a";
 const E = [0.16, 1, 0.3, 1];
-const EMAIL = "arnavupadhyay7@gmail.com";
+const EMAIL = "kundanpatil0111@gmail.com";
 
 const LINKS = [
   { id: "email", label: "Email", value: EMAIL, action: "copy" },
   {
     id: "github",
     label: "GitHub",
-    value: "github.com/ArnavUpadhyay7",
-    href: "https://github.com/ArnavUpadhyay7",
+    value: "github.com/YamrajOfCodes",
+    href: "https://github.com/YamrajOfCodes",
   },
   {
     id: "linkedin",
     label: "LinkedIn",
-    value: "linkedin.com/in/arnav-upadhyay7",
-    href: "https://www.linkedin.com/in/arnav-upadhyay7/",
+    value: "linkedin.com/in/Kundan-Patil",
+    href: "https://www.linkedin.com/in/kundan-patil-47a296362/",
   },
   {
     id: "X",
     label: "X",
-    value: "x.com/Arnav_Upadhyay7",
-    href: "https://x.com/Arnav_Upadhyay7",
+    value: "x.com/Kundanp82985546",
+    href: "https://x.com/Kundanp82985546?t=yKayvtReeZu3lWdp07nedQ&s=08",
   },
 ];
 
@@ -421,7 +421,7 @@ export default function ContactSection() {
                 textTransform: "uppercase",
                 color: "rgba(234,228,213,0.45)",
               }}>
-              Arnav Upadhyay
+              Kundan Patil
             </span>
 
             <span

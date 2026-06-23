@@ -85,7 +85,7 @@ function Word({ word, sp }) {
 
 // ─── Stats ────────────────────────────────────────────────────────────────────
 const STATS = [
-  { value: "3+",  label: "Years shipping" },
+  { value: "2+",  label: "Years shipping" },
   { value: "40+", label: "Projects built" },
   { value: "∞",   label: "Hours in motion" },
 ];

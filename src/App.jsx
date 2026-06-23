@@ -2,10 +2,10 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import SmoothScroll from "./utils/SmoothScroll";
-import Elevate from "./pages/Elevate";
-import Zentra from "./pages/Zentra";
 import Cursor from "./components/Cursor";
 import { TransitionProvider } from "./components/PageTransition";
+import MealManager from "./pages/Elevate";
+import SnapSense from "./pages/ImageInteraction";
 
 function App() {
   return (
@@ -14,8 +14,8 @@ function App() {
       <TransitionProvider>
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/elevate" element={<Elevate />} />
-          <Route path="/zentra" element={<Zentra />} />
+          <Route path="/meal-manager" element={<MealManager />} />
+          <Route path="/image-interaction" element={<SnapSense />} />
         </Routes>
       </TransitionProvider>
     </SmoothScroll>

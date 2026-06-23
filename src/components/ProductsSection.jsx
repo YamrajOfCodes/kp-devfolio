@@ -2,31 +2,31 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { ProductBlock } from "./ProductBlock";
 
-import ElevateThumbnail from "../assets/thumbnails/elevate.png";
-import ZentraThumbnail from "../assets/zentraImages/room.png";
+import MealManagerThumbnail from "../assets/thumbnails/MealManager.jpg";
+import ImageInteractionThumbnail from "../assets/ImageInteraction/snapsense.jpg";
 
 const CREAM = "#EAE4D5";
 const ORANGE = "#E8400C";
 const E = [0.16, 1, 0.3, 1];
 
 const PRODUCTS = [
+{
+  id: "meal-manager",
+  name: "Meal Manager",
+  hook: "Digitizing tiffin and mess operations for everyday businesses.",
+  desc: "A SaaS-based mess and tiffin management platform that streamlines daily operations for mess owners and customers. Owners can manage menus, orders, customer dues, and reports, while customers can view meals, place or skip orders, and track pending balances through a dedicated dashboard.",
+  stack: ["React", "Node.js", "Express", "MongoDB", "Tailwind CSS"],
+  accent: ORANGE,
+  mockup: { src: MealManagerThumbnail },
+},
   {
-    id: "elevate",
-    name: "Elevate",
-    hook: "For players who take gaming seriously.",
-    desc: "A competitive coaching platform for Valorant players. Get expert guidance, review gameplay, and improve faster with structured feedback and real-time sessions.",
-    stack: ["MERN", "Tailwind", "socket.io", "razorpay"],
-    accent: ORANGE,
-    mockup: { src: ElevateThumbnail },
-  },
-  {
-    id: "zentra",
-    name: "Zentra",
-    hook: "Zero friction 2d chill space.",
-    desc: "A real-time 2D social space where users can move, chat, and connect through text and voice — designed to feel effortless and alive.",
-    stack: ["React", "Phaser", "Node", "Express", "WebSocket", "WebRTC", "Tailwind"],
+    id: "image-interaction",
+    name: "SnapSense",
+    hook: "A Real-Time Image Interaction.",
+    desc: "A scalable, production-ready A Real-Time Image Interaction, Where users can respond with multiple images by giving reactions via emojis and by submitting their comments..",
+    stack: ["React", "Node", "Express", "Tailwind"],
     accent: CREAM,
-    mockup: { src: ZentraThumbnail },
+    mockup: { src: ImageInteractionThumbnail },
   },
 ];
 
