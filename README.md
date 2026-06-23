@@ -1,4 +1,4 @@
-Live URL - https://arnav26.vercel.app/
+Live URL - https://kp-devfolio.vercel.app/
 
 This isn’t the typical recruiter friendly portfolio. 
 This is an experimental portfolio (creativity over convention).
