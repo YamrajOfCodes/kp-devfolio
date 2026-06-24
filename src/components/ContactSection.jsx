@@ -433,7 +433,7 @@ export default function ContactSection() {
                 letterSpacing: "0.16em",
                 color: "rgba(234,228,213,0.45)",
               }}>
-              Based in India · Available for freelance &amp; Internships
+              Based in India · Open to Full-time & Freelance Opportunities
             </span>
 
             <span
